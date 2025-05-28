@@ -61,3 +61,7 @@ def delete_book():
     print("Book deleted.")
   else:
     print("Book not found.")
+
+def exit_program():
+  print("Goodbye!")
+  exit()
