@@ -34,3 +34,8 @@ def view_library_books():
       print(book)
   else:
     print("Library not found.")
+
+def list_books():
+  books = session.query(Book).all()
+  for book in books:
+    print(book)
