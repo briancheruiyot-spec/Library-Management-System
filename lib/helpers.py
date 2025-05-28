@@ -12,3 +12,14 @@ def create_library():
     session.add(lib)
     session.commit()
     print("Library created.")
+
+def delete_library():
+  list_libraries()
+  lib_id = input("Enter library ID to delete: ")
+  lib = session.query(Library).get(lib_id)
+  if lib:
+    session.delete(lib)
+    session.commit()
+    print("Library deleted.")
+  else:
+    print("Library not found.")
