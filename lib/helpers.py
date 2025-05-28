@@ -50,3 +50,14 @@ def create_book():
     session.add(book)
     session.commit()
     print("Book created.")
+
+def delete_book():
+  list_books()
+  book_id = input("Enter book ID to delete: ")
+  book = session.query(Book).get(book_id)
+  if book:
+    session.delete(book)
+    session.commit()
+    print("Book deleted.")
+  else:
+    print("Book not found.")
