@@ -4,7 +4,9 @@ from helpers import (
 )
 
 def main():
-  pass
+  while True:
+    menu()
+    choice = input("> ").strip()
 
 def menu():
   pass
