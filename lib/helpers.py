@@ -23,3 +23,14 @@ def delete_library():
     print("Library deleted.")
   else:
     print("Library not found.")
+
+
+def view_library_books():
+  list_libraries()
+  lib_id = input("Enter library ID to view books: ")
+  lib = session.query(Library).get(lib_id)
+  if lib:
+    for book in lib.books:
+      print(book)
+  else:
+    print("Library not found.")
