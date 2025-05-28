@@ -27,3 +27,6 @@ def seed():
 
   session.commit()
   print("Database seeded successfully!")
+
+if __name__ == "__main__":
+  seed()
