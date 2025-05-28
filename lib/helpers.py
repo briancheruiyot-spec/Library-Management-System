@@ -5,3 +5,10 @@ def list_libraries():
   for lib in libs:
     print(lib)
 
+def create_library():
+  name = input("Enter library name: ")
+  if name:
+    lib = Library(name=name)
+    session.add(lib)
+    session.commit()
+    print("Library created.")
