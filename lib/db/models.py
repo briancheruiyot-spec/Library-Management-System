@@ -16,3 +16,17 @@ class Library(Base):
 
   def __repr__(self):
     return f"<Library(id={self.id}, name='{self.name}')>"
+  
+class Book(Base):
+  __tablename__ = 'books'
+
+  id = Column(Integer, primary_key=True)
+  title = Column(String, nullable=False)
+  author = Column(String, nullable=False)
+  library_id = Column(Integer, ForeignKey('libraries.id'))
+
+  library = relationship('Library', back_populates='books')
+
+  def __repr__(self):
+    return f"<Book(id={self.id}, title='{self.title}', author='{self.author}')>"
+  
