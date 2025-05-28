@@ -28,4 +28,12 @@ def main():
       print("Invalid choice. Please try again.")
 
 def menu():
-  pass
+  print("\n--- Library Management CLI ---")
+  print("0. Exit")
+  print("1. List all libraries")
+  print("2. Create a library")
+  print("3. Delete a library")
+  print("4. View books in a library")
+  print("5. List all books")
+  print("6. Create a book")
+  print("7. Delete a book")
