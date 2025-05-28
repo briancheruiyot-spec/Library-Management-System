@@ -14,3 +14,5 @@ class Library(Base):
   name = Column(String, nullable=False)
   books = relationship('Book', back_populates='library', cascade='all, delete')
 
+  def __repr__(self):
+    return f"<Library(id={self.id}, name='{self.name}')>"
