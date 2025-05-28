@@ -39,3 +39,14 @@ def list_books():
   books = session.query(Book).all()
   for book in books:
     print(book)
+
+def create_book():
+  list_libraries()
+  title = input("Enter book title: ")
+  author = input("Enter author name: ")
+  library_id = input("Enter library ID: ")
+  if title and author and library_id:
+    book = Book(title=title, author=author, library_id=library_id)
+    session.add(book)
+    session.commit()
+    print("Book created.")
