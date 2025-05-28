@@ -37,3 +37,6 @@ def menu():
   print("5. List all books")
   print("6. Create a book")
   print("7. Delete a book")
+
+if __name__ == "__main__":
+  main()
