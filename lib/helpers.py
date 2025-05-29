@@ -1,66 +1,173 @@
-from lib.db.models import session, Library, Book
+from lib.db.models import get_session, Library, Book
+
+def get_valid_input(prompt, validator=None, error_msg="Invalid input"):
+  while True:
+    try:
+      value = input(prompt).strip()
+      if validator:
+        value = validator(value)
+      return value
+    except ValueError as e:
+      print(f"Error: {e}")
+
+def validate_id(input_str):
+  if not input_str.isdigit():
+    raise ValueError("ID must be a number")
+  return int(input_str)
 
 def list_libraries():
-  libs = session.query(Library).all()
-  for lib in libs:
-    print(lib)
+  session = get_session()
+  try:
+    libs = Library.get_all(session)
+    if not libs:
+      print("No libraries found")
+      return
+    for lib in libs:
+      print(lib)
+  except Exception as e:
+    print(f"Error: {e}")
+  finally:
+    session.close()
 
 def create_library():
-  name = input("Enter library name: ")
-  if name:
-    lib = Library(name=name)
-    session.add(lib)
-    session.commit()
-    print("Library created.")
+  session = get_session()
+  try:
+    name = get_valid_input("Enter library name: ")
+    Library.create(session, name)
+    print("Library created successfully!")
+  except Exception as e:
+    session.rollback()
+    print(f"Error creating library: {e}")
+  finally:
+    session.close()
 
 def delete_library():
   list_libraries()
-  lib_id = input("Enter library ID to delete: ")
-  lib = session.query(Library).get(lib_id)
-  if lib:
-    session.delete(lib)
-    session.commit()
-    print("Library deleted.")
-  else:
-    print("Library not found.")
-
+  session = get_session()
+  try:
+    lib_id = get_valid_input("Enter library ID to delete: ", validate_id)
+    if Library.delete(session, lib_id):
+      print("Library deleted successfully!")
+    else:
+      print("Library not found")
+  except Exception as e:
+    session.rollback()
+    print(f"Error deleting library: {e}")
+  finally:
+    session.close()
 
 def view_library_books():
   list_libraries()
-  lib_id = input("Enter library ID to view books: ")
-  lib = session.query(Library).get(lib_id)
-  if lib:
-    for book in lib.books:
-      print(book)
-  else:
-    print("Library not found.")
+  session = get_session()
+  try:
+    lib_id = get_valid_input("Enter library ID to view books: ", validate_id)
+    lib = Library.find_by_id(session, lib_id)
+    if lib:
+      if lib.books:
+        for book in lib.books:
+          print(book)
+      else:
+        print("No books found in this library")
+    else:
+      print("Library not found")
+  except Exception as e:
+    print(f"Error: {e}")
+  finally:
+    session.close()
 
 def list_books():
-  books = session.query(Book).all()
-  for book in books:
-    print(book)
+  session = get_session()
+  try:
+    books = Book.get_all(session)
+    if books:
+      for book in books:
+        print(book)
+    else:
+      print("No books found")
+  except Exception as e:
+    print(f"Error: {e}")
+  finally:
+    session.close()
 
 def create_book():
   list_libraries()
-  title = input("Enter book title: ")
-  author = input("Enter author name: ")
-  library_id = input("Enter library ID: ")
-  if title and author and library_id:
-    book = Book(title=title, author=author, library_id=library_id)
-    session.add(book)
-    session.commit()
-    print("Book created.")
+  session = get_session()
+  try:
+    title = get_valid_input("Enter book title: ")
+    author = get_valid_input("Enter author name: ")
+    lib_id = get_valid_input("Enter library ID: ", validate_id)
+    
+    # Verify library exists
+    if not Library.find_by_id(session, lib_id):
+      raise ValueError("Library does not exist")
+      
+    Book.create(session, title, author, lib_id)
+    print("Book created successfully!")
+  except Exception as e:
+    session.rollback()
+    print(f"Error creating book: {e}")
+  finally:
+    session.close()
 
 def delete_book():
   list_books()
-  book_id = input("Enter book ID to delete: ")
-  book = session.query(Book).get(book_id)
-  if book:
-    session.delete(book)
-    session.commit()
-    print("Book deleted.")
-  else:
-    print("Book not found.")
+  session = get_session()
+  try:
+    book_id = get_valid_input("Enter book ID to delete: ", validate_id)
+    if Book.delete(session, book_id):
+      print("Book deleted successfully!")
+    else:
+      print("Book not found")
+  except Exception as e:
+    session.rollback()
+    print(f"Error deleting book: {e}")
+  finally:
+    session.close()
+
+def find_library_by_name():
+  session = get_session()
+  try:
+    name = input("Enter library name to search: ").strip()
+    results = Library.find_by_name(session, name)
+    if results:
+      for lib in results:
+        print(lib)
+    else:
+      print("No libraries found")
+  except Exception as e:
+    print(f"Error: {e}")
+  finally:
+    session.close()
+
+def find_book_by_title():
+  session = get_session()
+  try:
+    title = input("Enter book title to search: ").strip()
+    results = Book.find_by_title(session, title)
+    if results:
+      for book in results:
+        print(book)
+    else:
+      print("No books found")
+  except Exception as e:
+    print(f"Error: {e}")
+  finally:
+    session.close()
+
+def find_book_by_author():
+  session = get_session()
+  try:
+    author = input("Enter author name to search: ").strip()
+    results = Book.find_by_author(session, author)
+    if results:
+      for book in results:
+        print(book)
+    else:
+      print("No books found")
+  except Exception as e:
+    print(f"Error: {e}")
+  finally:
+    session.close()
 
 def exit_program():
   print("Goodbye!")
