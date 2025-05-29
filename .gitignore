@@ -1,6 +1,8 @@
 # Byte-compiled / optimized / DLL files
 __pycache__/
+**/__pycache__/
 *.py[cod]
+**/*.py[cod]
 *$py.class
 
 # Virtual environment
@@ -11,12 +13,30 @@ env/
 ENV/
 Library-Management-System-ViHr4SxD/
 *.env
+Pipfile.lock
+
+# SQLite databases and related files
+*.sqlite3
+*.sqlite3-journal
+*.db
+*.db-journal
+*.db-wal
+*.db-shm
+
+# Alembic migrations (optional - uncomment if you don't want to track versions)
+# lib/db/migrations/versions/
+
+# Logs
+*.log
 
 # VS Code settings
 .vscode/
 
 # Mac system files
 .DS_Store
+
+# Jupyter Notebook checkpoints
+.ipynb_checkpoints/
 
 # Test coverage reports
 htmlcov/
@@ -26,16 +46,6 @@ nosetests.xml
 coverage.xml
 *.cover
 *.py,cover
-
-# Logs
-*.log
-
-# SQLite databases
-*.sqlite3
-*.db
-
-# Jupyter Notebook checkpoints
-.ipynb_checkpoints/
 
 # Mypy / Pyright / Pytest / other tooling
 .mypy_cache/
@@ -47,3 +57,9 @@ build/
 dist/
 *.egg-info/
 .eggs/
+
+# Editor swap/backup files
+*~
+*.swp
+*.swo
+*.bak
