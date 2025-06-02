@@ -1,4 +1,4 @@
-# 📚 Library Management System (CLI-based)
+# 📚 Library Management System
 
 A simple yet powerful command-line interface (CLI) application for managing libraries and books using Python and SQLite. Built as part of the Flatiron Phase 3 project, this system enables you to perform CRUD operations on libraries and their associated books.
 
