@@ -60,6 +60,7 @@ python -m lib.cli
 ## 📋 CLI Options
 
 --- Library Management CLI ---
+
 0. Exit
 1. List all libraries
 2. Create a library
