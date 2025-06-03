@@ -41,7 +41,9 @@ Library-Management-System/
 ### 1. 🐍 Create and activate a virtual environment
 
 - pipenv install
-- pipenv shell
+- pipenv install alembic
+- pip install alembic
+
 
 ### 2. 🛠️ Run Alembic migrations
 
