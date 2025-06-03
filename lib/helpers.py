@@ -97,7 +97,6 @@ def create_book():
     author = get_valid_input("Enter author name: ")
     lib_id = get_valid_input("Enter library ID: ", validate_id)
     
-    # Verify library exists
     if not Library.find_by_id(session, lib_id):
       raise ValueError("Library does not exist")
       
