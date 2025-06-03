@@ -1,6 +1,7 @@
-from sqlalchemy import Column, Integer, String, ForeignKey, create_engine
+from sqlalchemy import Column, Integer, String, ForeignKey, create_engine, DateTime, Boolean
 from sqlalchemy.orm import relationship, declarative_base, sessionmaker, validates
 from sqlalchemy.exc import SQLAlchemyError
+from datetime import datetime, timedelta
 
 Base = declarative_base()
 engine = create_engine('sqlite:///lib/db/library.db')
@@ -25,7 +26,6 @@ class Library(Base):
   def __repr__(self):
     return f"<Library(id={self.id}, name='{self.name}')>"
   
-  # ORM methods
   @classmethod
   def create(cls, session, name):
     library = cls(name=name)
@@ -61,6 +61,10 @@ class Book(Base):
   title = Column(String, nullable=False)
   author = Column(String, nullable=False)
   library_id = Column(Integer, ForeignKey('libraries.id'))
+  checked_out = Column(Boolean, default=False)
+  due_date = Column(DateTime, nullable=True)
+  checkout_date = Column(DateTime, nullable=True)
+  patron_name = Column(String, nullable=True)
 
   library = relationship('Library', back_populates='books')
 
@@ -73,7 +77,6 @@ class Book(Base):
   def __repr__(self):
     return f"<Book(id={self.id}, title='{self.title}', author='{self.author}')>"
   
-  # ORM methods
   @classmethod
   def create(cls, session, title, author, library_id):
     book = cls(title=title, author=author, library_id=library_id)
@@ -105,3 +108,34 @@ class Book(Base):
   @classmethod
   def find_by_author(cls, session, author):
     return session.query(cls).filter(cls.author.ilike(f"%{author}%")).all()
+  
+  @classmethod
+  def check_out(cls, session, book_id, patron_name):
+    book = session.get(cls, book_id)
+    if not book:
+      return False
+    book.checked_out = True
+    book.checkout_date = datetime.now()
+    book.due_date = datetime.now() + timedelta(days=14)
+    book.patron_name = patron_name
+    session.commit()
+    return True
+
+  @classmethod
+  def return_book(cls, session, book_id):
+    book = session.get(cls, book_id)
+    if not book:
+      return False
+    book.checked_out = False
+    book.due_date = None
+    book.checkout_date = None
+    book.patron_name = None
+    session.commit()
+    return True
+
+  @classmethod
+  def get_overdue(cls, session):
+    return session.query(cls).filter(
+      cls.checked_out == True,
+      cls.due_date < datetime.now()
+    ).all()

@@ -1,4 +1,5 @@
 from lib.db.models import get_session, Library, Book
+from datetime import datetime
 
 def get_valid_input(prompt, validator=None, error_msg="Invalid input"):
   while True:
@@ -65,7 +66,8 @@ def view_library_books():
     if lib:
       if lib.books:
         for book in lib.books:
-          print(book)
+          status = "Checked out" if book.checked_out else "Available"
+          print(f"{book} - Status: {status}")
       else:
         print("No books found in this library")
     else:
@@ -81,7 +83,8 @@ def list_books():
     books = Book.get_all(session)
     if books:
       for book in books:
-        print(book)
+        status = "Checked out" if book.checked_out else "Available"
+        print(f"{book} - Status: {status}")
     else:
       print("No books found")
   except Exception as e:
@@ -145,7 +148,8 @@ def find_book_by_title():
     results = Book.find_by_title(session, title)
     if results:
       for book in results:
-        print(book)
+        status = "Checked out" if book.checked_out else "Available"
+        print(f"{book} - Status: {status}")
     else:
       print("No books found")
   except Exception as e:
@@ -160,9 +164,64 @@ def find_book_by_author():
     results = Book.find_by_author(session, author)
     if results:
       for book in results:
-        print(book)
+        status = "Checked out" if book.checked_out else "Available"
+        print(f"{book} - Status: {status}")
     else:
       print("No books found")
+  except Exception as e:
+    print(f"Error: {e}")
+  finally:
+    session.close()
+
+def check_out_book():
+  list_books()
+  session = get_session()
+  try:
+    book_id = get_valid_input("Enter book ID to check out: ", validate_id)
+    patron_name = get_valid_input("Enter patron name: ")
+    
+    if Book.check_out(session, book_id, patron_name):
+      print("Book checked out successfully!")
+      book = Book.find_by_id(session, book_id)
+      print(f"Due date: {book.due_date.strftime('%Y-%m-%d')}")
+    else:
+      print("Book not found")
+  except Exception as e:
+    session.rollback()
+    print(f"Error checking out book: {e}")
+  finally:
+    session.close()
+
+def return_book():
+  list_books()
+  session = get_session()
+  try:
+    book_id = get_valid_input("Enter book ID to return: ", validate_id)
+    if Book.return_book(session, book_id):
+      print("Book returned successfully!")
+    else:
+      print("Book not found")
+  except Exception as e:
+    session.rollback()
+    print(f"Error returning book: {e}")
+  finally:
+    session.close()
+
+def list_overdue_books():
+  session = get_session()
+  try:
+    overdue_books = Book.get_overdue(session)
+    if not overdue_books:
+      print("No overdue books found")
+      return
+      
+    print("\n--- Overdue Books ---")
+    for book in overdue_books:
+      days_overdue = (datetime.now() - book.due_date).days
+      print(f"ID: {book.id}, Title: {book.title}")
+      print(f"Patron: {book.patron_name}")
+      print(f"Due date: {book.due_date.strftime('%Y-%m-%d')} ({days_overdue} days overdue)")
+      print("-" * 40)
   except Exception as e:
     print(f"Error: {e}")
   finally:
